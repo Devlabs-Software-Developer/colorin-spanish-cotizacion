@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COT-2026-104 — DevLabs / Colorín Spanish Immersion Program</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+  :root {
+    --verde: #4CAF50; --verde-oscuro: #2e7d32; --verde-muy-oscuro: #1b5e20;
+    --verde-fondo: #f8fdf8; --verde-borde: #c8e6c9;
+    --azul: #3f51b5; --gris: #333; --gris-sub: #666; --gris-linea: #e8e8e8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans','Segoe UI',sans-serif; background: #f0f0eb; color: var(--gris); font-size: 13.5px; line-height: 1.65; }
+  .page { max-width: 920px; margin: 30px auto; background: #fff; box-shadow: 0 4px 32px rgba(0,0,0,0.10); }
+
+  /* ── LANG SWITCHER ── */
+  .lang-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: #fff; border-bottom: 2px solid var(--verde-borde);
+    padding: 10px 36px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+  .lang-bar .lang-label { font-size: 11px; color: var(--gris-sub); font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; }
+  .lang-toggle {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--verde-fondo); border: 1px solid var(--verde-borde);
+    border-radius: 30px; padding: 4px 6px;
+  }
+  .lang-btn {
+    padding: 5px 18px; border-radius: 20px; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s ease; letter-spacing: 0.5px;
+    background: transparent; color: var(--gris-sub);
+  }
+  .lang-btn.active { background: var(--verde-muy-oscuro); color: #fff; }
+  .lang-btn:hover:not(.active) { background: var(--verde-borde); color: var(--verde-oscuro); }
+  .lang-divider { width: 1px; height: 18px; background: var(--verde-borde); }
+
+  /* ── LANG VISIBILITY ── */
+  .en, .es { transition: opacity 0.15s; }
+  body.lang-es .en { display: none; }
+  body.lang-en .es { display: none; }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #ffffff 0%, #f7fbf7 28%, #edf7ed 55%, #dff0df 78%, #c8e6c9 100%);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 170px;
+    align-items: center;
+    border-bottom: 1px solid rgba(76, 175, 80, 0.18);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 120% at 0% 50%, rgba(255,255,255,0.9) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .header-left,
+  .header-right { position: relative; z-index: 1; }
+  .header-left {
+    padding: 28px 36px;
+    border-right: 1px solid rgba(76, 175, 80, 0.14);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .header-logo {
+    max-height: 96px;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 3px 12px rgba(27, 94, 32, 0.1));
+  }
+  .header-left .contact {
+    margin-top: 0;
+    font-size: 11.5px;
+    color: var(--verde-oscuro);
+    line-height: 1.9;
+    opacity: 0.88;
+  }
+  .header-right {
+    padding: 28px 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  .header-right .doc-badge {
+    background: var(--verde);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.25);
+  }
+  .header-right .doc-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--verde-muy-oscuro);
+    display: block;
+  }
+  .header-right .doc-meta {
+    font-size: 11.5px;
+    color: var(--verde-oscuro);
+    text-align: right;
+    line-height: 2;
+    margin-top: 8px;
+    opacity: 0.82;
+  }
+  .accent-bar {
+    height: 4px;
+    background: linear-gradient(90deg, #ffffff 0%, var(--verde) 45%, var(--verde-muy-oscuro) 100%);
+  }
+
+  /* ── INTRO STRIP ── */
+  .intro-strip { background: var(--verde-fondo); border-bottom: 1px solid var(--verde-borde); padding: 14px 36px; display: flex; gap: 0; flex-wrap: wrap; }
+  .intro-item { padding: 0 24px 0 0; margin-right: 24px; border-right: 1px solid var(--verde-borde); }
+  .intro-item:last-child { border-right: none; }
+  .intro-item label { font-size: 9.5px; text-transform: uppercase; letter-spacing: 1px; color: var(--verde-oscuro); font-weight: 700; display: block; }
+  .intro-item span { font-size: 13px; font-weight: 600; }
+
+  /* ── CONTENT ── */
+  .content { padding: 40px 36px; }
+  .section { margin-bottom: 42px; }
+  .section-label { font-size: 9.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--verde); margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+  .section-label::after { content:''; flex:1; height:1px; background: var(--verde-borde); }
+  .section-title { font-family: 'DM Serif Display',serif; font-size: 20px; color: var(--verde-muy-oscuro); margin-bottom: 14px; line-height: 1.3; }
+
+  /* ── PARTES ── */
+  .partes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .parte-card { border: 1px solid var(--verde-borde); border-top: 3px solid var(--verde); padding: 18px 20px; background: var(--verde-fondo); }
+  .parte-card h4 { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--verde-oscuro); margin-bottom: 10px; }
+  .parte-card p { font-size: 13px; color: var(--gris-sub); line-height: 2; }
+  .parte-card strong { color: var(--gris); }
+
+  /* ── INTRO P ── */
+  .intro-p { font-size: 13.5px; color: var(--gris-sub); line-height: 1.8; border-left: 3px solid var(--verde); padding-left: 16px; }
+
+  /* ── ALCANCE ── */
+  .alcance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .alc-card { border-radius: 2px; padding: 14px 16px; font-size: 12.5px; }
+  .alc-incluye { background: #e8f5e9; border: 1px solid #a5d6a7; }
+  .alc-excluye { background: #fff8e1; border: 1px solid #ffe082; }
+  .alc-card h4 { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .alc-incluye h4 { color: var(--verde-oscuro); }
+  .alc-excluye h4 { color: #e65100; }
+  .alc-card ul { padding-left: 14px; color: var(--gris-sub); line-height: 1.9; }
+
+  /* ── MÓDULOS ── */
+  .modulo-card { border: 1px solid var(--gris-linea); margin-bottom: 14px; overflow: hidden; }
+  .modulo-head { display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 16px; padding: 14px 18px; background: var(--verde-fondo); border-bottom: 1px solid var(--verde-borde); }
+  .modulo-num { width: 44px; height: 44px; background: var(--verde-muy-oscuro); color: #fff; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display',serif; font-size: 18px; flex-shrink: 0; }
+  .modulo-info h3 { font-size: 14px; font-weight: 700; color: var(--gris); }
+  .modulo-info p { font-size: 12px; color: var(--gris-sub); margin-top: 1px; }
+  .modulo-precio { font-family: 'DM Serif Display',serif; font-size: 20px; color: var(--verde-oscuro); text-align: right; white-space: nowrap; }
+  .modulo-precio small { font-family: 'DM Sans',sans-serif; font-size: 10px; display: block; color: #999; font-weight: 400; margin-top: 1px; }
+  .modulo-body { padding: 16px 18px; }
+  .modulo-body ul { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .modulo-body ul li { font-size: 12.5px; color: var(--gris-sub); padding-left: 14px; position: relative; line-height: 1.5; }
+  .modulo-body ul li::before { content:'›'; position: absolute; left: 0; color: var(--verde); font-weight: 700; }
+  .modulo-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 2px; margin-top: 10px; margin-right: 6px; }
+  .tag-fe { background: #e3f2fd; color: #1565c0; }
+  .tag-be { background: #e8f5e9; color: var(--verde-oscuro); }
+  .tag-int { background: var(--verde-fondo); color: var(--verde-oscuro); border: 1px solid var(--verde-borde); }
+
+  /* AVISO */
+  .aviso-contenido { background: #fff8e1; border: 1px solid #ffe082; border-left: 4px solid #f9a825; padding: 14px 18px; border-radius: 0 2px 2px 0; margin-top: 20px; font-size: 13px; color: #4e342e; line-height: 1.75; }
+  .aviso-contenido strong { color: #e65100; }
+  .aviso-contenido ul { padding-left: 16px; margin-top: 8px; line-height: 2; }
+
+  /* ── CRONOGRAMA ── */
+  .crono-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+  .crono-card { border: 1px solid var(--verde-borde); padding: 14px 12px; text-align: center; background: var(--verde-fondo); }
+  .crono-card .cv { font-family: 'DM Serif Display',serif; font-size: 22px; color: var(--verde-oscuro); display: block; }
+  .crono-card .cl { font-size: 10.5px; color: var(--gris-sub); margin-top: 2px; }
+  .fases-timeline { display: flex; gap: 0; margin-bottom: 16px; }
+  .fase-item { flex: 1; text-align: center; padding: 12px 8px; border: 1px solid var(--verde-borde); border-right: none; background: var(--verde-fondo); font-size: 12px; }
+  .fase-item:last-child { border-right: 1px solid var(--verde-borde); }
+  .fase-item .fi-num { font-weight: 800; color: var(--verde-oscuro); display: block; font-size: 13px; }
+  .fase-item .fi-label { color: var(--gris-sub); font-size: 11px; margin-top: 2px; }
+  .fase-item .fi-date { color: var(--verde); font-weight: 700; font-size: 12px; margin-top: 4px; display: block; }
+  .fase-item.activa { background: var(--verde-oscuro); border-color: var(--verde-oscuro); }
+  .fase-item.activa .fi-num, .fase-item.activa .fi-label, .fase-item.activa .fi-date { color: #fff; }
+
+  /* ── COSTOS ── */
+  .costo-tabla { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .costo-tabla tr { border-bottom: 1px solid var(--gris-linea); }
+  .costo-tabla tr:hover td { background: var(--verde-fondo); }
+  .costo-tabla td { padding: 10px 14px; }
+  .costo-tabla td.right { text-align: right; font-weight: 700; color: var(--verde-oscuro); }
+  .costo-tabla .row-video td { background: #f3e5f5; }
+  .costo-tabla .row-qa td { background: #e3f2fd; }
+  .costo-tabla .row-total td { background: var(--verde-muy-oscuro); color: #fff; font-size: 15px; font-weight: 800; }
+  .costo-tabla .row-total td.right { color: #fff; }
+  .mod-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; background: var(--verde); }
+
+  /* PAGOS */
+  .pagos-wrap { display: flex; }
+  .pago-hito { flex: 1; text-align: center; padding: 16px 10px; border: 1px solid var(--verde-borde); border-right: none; }
+  .pago-hito:last-child { border-right: 1px solid var(--verde-borde); }
+  .pago-hito .ph-pct { font-family: 'DM Serif Display',serif; font-size: 28px; color: var(--verde-oscuro); display: block; }
+  .pago-hito .ph-usd { font-size: 16px; font-weight: 700; color: var(--gris); }
+  .pago-hito .ph-label { font-size: 11px; color: var(--gris-sub); margin-top: 4px; }
+  .pago-hito .ph-when { font-size: 11px; font-weight: 700; color: var(--azul); margin-top: 3px; }
+  .pago-sep { display: flex; align-items: center; color: #ccc; font-size: 22px; padding: 0 2px; }
+
+  /* TÉRMINOS */
+  .terminos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .termino { border-left: 2px solid var(--verde); padding-left: 12px; }
+  .termino h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--verde-oscuro); margin-bottom: 4px; }
+  .termino p { font-size: 12.5px; color: var(--gris-sub); line-height: 1.7; }
+
+  /* FIRMAS */
+  .firmas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 20px; }
+  .firma { border-top: 1.5px solid var(--verde); padding-top: 10px; }
+  .firma-espacio { height: 48px; }
+  .firma-nombre { font-weight: 700; font-size: 13.5px; }
+  .firma-cargo { font-size: 12px; color: var(--gris-sub); }
+  .firma-fecha { font-size: 11px; color: #aaa; margin-top: 4px; }
+
+  /* FOOTER */
+  .footer { background: var(--verde-muy-oscuro); color: #a5d6a7; padding: 16px 36px; font-size: 11.5px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .footer strong { color: #fff; }
+  .footer a { color: #a5d6a7; text-decoration: none; }
+  .disclaimer { background: var(--verde-fondo); border-top: 1px solid var(--verde-borde); padding: 12px 36px; font-size: 11px; color: #888; text-align: center; }
+
+  @media print {
+    .lang-bar { display: none; }
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; }
+  }
+  @media (max-width: 660px) {
+    .header { grid-template-columns: 1fr; }
+    .header-left {
+      border-right: none;
+      border-bottom: 1px solid rgba(76, 175, 80, 0.14);
+      padding: 24px 20px;
+    }
+    .header-right {
+      align-items: flex-start;
+      padding: 20px;
+    }
+    .header-right .doc-meta { text-align: left; }
+    .header-logo { max-height: 84px; }
+    .content { padding: 24px 16px; }
+    .partes-grid,.alcance-grid,.terminos-grid,.firmas-grid,.crono-grid { grid-template-columns: 1fr; }
+    .modulo-body ul { grid-template-columns: 1fr; }
+    .pagos-wrap,.fases-timeline { flex-direction: column; }
+    .pago-hito,.fase-item { border-right: 1px solid var(--verde-borde); border-bottom: none; }
+    .pago-sep { display: none; }
+    .lang-bar { padding: 10px 16px; }
+    .intro-strip { gap: 12px; }
+    .intro-item { border-right: none; }
+  }
+</style>
+</head>
+<body class="lang-en">
+
+<!-- ── LANGUAGE SWITCHER ── -->
+<div class="lang-bar">
+  <span class="lang-label">
+    <span class="en">Document Language</span>
+    <span class="es">Idioma del documento</span>
+  </span>
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">🇺🇸 English</button>
+    <div class="lang-divider"></div>
+    <button class="lang-btn" id="btn-es" onclick="setLang('es')">🇪🇨 Español</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <img src="assets/logo.png" alt="DevLabs — Software Seguro, a tu Medida" class="header-logo">
+      <div class="contact">
+        development@devlabsec.com<br>
+        +593 99 937 2409
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="doc-badge">
+        <span class="en">Development Proposal</span>
+        <span class="es">Propuesta de Desarrollo</span>
+      </span>
+      <span class="doc-num">COT-2026-104</span>
+      <div class="doc-meta">
+        Quito, Ecuador<br>
+        <span class="en">June 2026 · Valid 30 days</span>
+        <span class="es">Junio 2026 · Vigencia 30 días</span>
+      </div>
+    </div>
+  </div>
+  <div class="accent-bar"></div>
+
+  <!-- INTRO STRIP -->
+  <div class="intro-strip">
+    <div class="intro-item">
+      <label><span class="en">Client</span><span class="es">Cliente</span></label>
+      <span>Colorín Spanish Immersion Program</span>
+    </div>
+    <div class="intro-item">
+      <label><span class="en">Project</span><span class="es">Proyecto</span></label>
+      <span><span class="en">Educational Web App — Phase 1 MVP</span><span class="es">Aplicación Educativa Web — Fase 1 MVP</span></span>
+    </div>
+    <div class="intro-item">
+      <label><span class="en">Option</span><span class="es">Opción</span></label>
+      <span><span class="en">A — iPhone Video Production</span><span class="es">A — Videos con iPhone</span></span>
+    </div>
+    <div class="intro-item">
+      <label><span class="en">Target Launch</span><span class="es">Lanzamiento</span></label>
+      <span><span class="en">September 2026</span><span class="es">Septiembre 2026</span></span>
+    </div>
+    <div class="intro-item">
+      <label><span class="en">Total Investment</span><span class="es">Inversión Total</span></label>
+      <span>$8,833 USD</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- 01 PARTIES -->
+    <div class="section">
+      <div class="section-label">01 — <span class="en">Parties</span><span class="es">Partes</span></div>
+      <div class="section-title">
+        <span class="en">Client & Service Provider</span>
+        <span class="es">Cliente y Proveedor de Servicios</span>
+      </div>
+      <div class="partes-grid">
+        <div class="parte-card">
+          <h4><span class="en">Client</span><span class="es">Cliente</span></h4>
+          <p>
+            <strong>Colorín Spanish Immersion Program</strong><br>
+            185 Route 36, Building B4<br>
+            West Long Branch, NJ 07764<br>
+            justplaynj@gmail.com · (732) 509-7600<br>
+            colorinspanishprogram.com
+          </p>
+        </div>
+        <div class="parte-card">
+          <h4><span class="en">Service Provider</span><span class="es">Proveedor de Servicios</span></h4>
+          <p>
+            <strong>DevLabs</strong><br>
+            Quito, Ecuador<br>
+            development@devlabsec.com<br>
+            +593 99 937 2409<br>
+            <span class="en">Representative:</span><span class="es">Representante:</span> <strong>Ing. Andres Bonilla</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 PROJECT OVERVIEW -->
+    <div class="section">
+      <div class="section-label">02 — <span class="en">Project Overview</span><span class="es">Descripción del Proyecto</span></div>
+      <div class="section-title">
+        <span class="en">What We Are Building Together</span>
+        <span class="es">Lo Que Vamos a Construir</span>
+      </div>
+      <p class="intro-p">
+        <span class="en">DevLabs will design and develop a <strong>bilingual educational Web App</strong> for Colorín Spanish Immersion Program — a digital extension of the Colorín method that allows families to reinforce at home what children learn in class. The platform features 20 thematic modules with video, audio, interactive storytelling, and visual quizzes, all designed for children ages 2–4 alongside their parents or caregivers. Access is managed through a monthly or annual subscription tied to the Colorín school year.</span>
+        <span class="es">DevLabs diseñará y desarrollará una <strong>aplicación web educativa bilingüe</strong> para Colorín Spanish Immersion Program — una extensión digital del método Colorín que permite a las familias reforzar en casa lo que los niños aprenden en clase. La plataforma contiene 20 módulos temáticos con video, audio, libros ilustrados y evaluaciones visuales, diseñada para niños de 2 a 4 años junto a sus padres o cuidadores. El acceso se gestiona mediante una suscripción mensual o anual vinculada al año lectivo de Colorín.</span>
+      </p>
+
+      <div class="alcance-grid" style="margin-top:18px;">
+        <div class="alc-card alc-incluye">
+          <h4>✅ <span class="en">This proposal includes</span><span class="es">Esta propuesta incluye</span></h4>
+          <ul>
+            <li><span class="en">Responsive Web App (iOS Safari + Android Chrome)</span><span class="es">Web App responsiva (iOS Safari + Android Chrome)</span></li>
+            <li><span class="en">20 complete thematic learning modules</span><span class="es">20 módulos de aprendizaje completos</span></li>
+            <li><span class="en">Video player with Spanish & English subtitles (SRT)</span><span class="es">Reproductor de video con subtítulos ES/EN (SRT)</span></li>
+            <li><span class="en">Visual quiz system (image + audio, no reading)</span><span class="es">Sistema de evaluación visual (imagen + audio)</span></li>
+            <li><span class="en">Weekly auto-unlock + quiz-based progression</span><span class="es">Desbloqueo semanal automático + por quiz</span></li>
+            <li><span class="en">Family account with 10+1 month access cycle</span><span class="es">Cuenta familiar con ciclo de 10+1 meses</span></li>
+            <li><span class="en">Stripe-powered monthly & annual subscriptions</span><span class="es">Suscripciones mensual y anual con Stripe</span></li>
+            <li><span class="en">Full bilingual interface (English / Spanish)</span><span class="es">Interfaz bilingüe completa (inglés / español)</span></li>
+            <li><span class="en">Video editing — Option A (iPhone footage)</span><span class="es">Edición de video — Opción A (iPhone)</span></li>
+            <li><span class="en">3 months post-launch support included</span><span class="es">3 meses de soporte post-lanzamiento incluidos</span></li>
+          </ul>
+        </div>
+        <div class="alc-card alc-excluye">
+          <h4>⚠️ <span class="en">Not included</span><span class="es">No incluido</span></h4>
+          <ul>
+            <li><span class="en">2D Animation — Option B (separate quote)</span><span class="es">Animación 2D — Opción B (cotización aparte)</span></li>
+            <li><span class="en">Native iOS App Store application (future phase)</span><span class="es">App nativa iOS App Store (fase futura)</span></li>
+            <li><span class="en">Voice/pronunciation recognition (future phase)</span><span class="es">Reconocimiento de voz/pronunciación (fase futura)</span></li>
+            <li><span class="en">Admin dashboard for staff (future phase)</span><span class="es">Panel de administración para el equipo (fase futura)</span></li>
+            <li><span class="en">Video recording — client provides footage</span><span class="es">Grabación de video — el cliente provee el material</span></li>
+            <li><span class="en">SRT subtitle files — client provides transcripts</span><span class="es">Archivos SRT — el cliente provee las transcripciones</span></li>
+            <li><span class="en">Quiz design — Colorín defines the questions</span><span class="es">Diseño pedagógico del quiz — lo define Colorín</span></li>
+            <li><span class="en">Third-party service fees (hosting, Stripe, Vimeo)</span><span class="es">Costos de servicios externos (hosting, Stripe, Vimeo)</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03 SCOPE OF WORK -->
+    <div class="section">
+      <div class="section-label">03 — <span class="en">Scope of Work</span><span class="es">Alcance del Desarrollo</span></div>
+      <div class="section-title">
+        <span class="en">Development Modules — What Gets Built</span>
+        <span class="es">Módulos de Desarrollo — Qué se va a construir</span>
+      </div>
+
+      <!-- MOD 1 -->
+      <div class="modulo-card">
+        <div class="modulo-head">
+          <div class="modulo-num">1</div>
+          <div class="modulo-info">
+            <h3><span class="en">Family Account & Access Management</span><span class="es">Cuenta Familiar y Control de Acceso</span></h3>
+            <p><span class="en">Secure login with automatic 10-month access cycle tied to the Colorín school year</span><span class="es">Login seguro con ciclo de acceso automático de 10 meses vinculado al año lectivo Colorín</span></p>
+          </div>
+          <div class="modulo-precio">$1,020<small>Module 1</small></div>
+        </div>
+        <div class="modulo-body">
+          <ul>
+            <li><span class="en">Family account registration (email + password)</span><span class="es">Registro de cuenta familiar (email + contraseña)</span></li>
+            <li><span class="en">Secure login with persistent session</span><span class="es">Login seguro con sesión persistente</span></li>
+            <li><span class="en">Account linked to Colorín enrollment code</span><span class="es">Cuenta vinculada a código de matrícula Colorín</span></li>
+            <li><span class="en">Automatic 10-month access cycle activation</span><span class="es">Activación automática de ciclo de 10 meses</span></li>
+            <li><span class="en">1 additional review month after school year ends</span><span class="es">1 mes adicional de repaso al terminar el año lectivo</span></li>
+            <li><span class="en">Automatic access expiration when cycle ends</span><span class="es">Expiración automática de acceso al vencer el ciclo</span></li>
+            <li><span class="en">Content locked but app stays on device</span><span class="es">Contenido bloqueado pero el app permanece en el dispositivo</span></li>
+            <li><span class="en">Password recovery via email</span><span class="es">Recuperación de contraseña por correo</span></li>
+            <li><span class="en">Renewal available at next school year start</span><span class="es">Renovación disponible al inicio del siguiente año escolar</span></li>
+            <li><span class="en">Account settings and profile management</span><span class="es">Configuración de cuenta y gestión de perfil</span></li>
+          </ul>
+          <span class="modulo-tag tag-fe">Frontend</span><span class="modulo-tag tag-be">Backend</span>
+        </div>
+      </div>
+
+      <!-- MOD 2 -->
+      <div class="modulo-card">
+        <div class="modulo-head">
+          <div class="modulo-num">2</div>
+          <div class="modulo-info">
+            <h3><span class="en">Content Platform — 20 Learning Modules</span><span class="es">Plataforma de Contenido — 20 Módulos</span></h3>
+            <p><span class="en">All 20 thematic modules with 5-step sequence, video player, and storybook viewer</span><span class="es">Los 20 módulos temáticos con secuencia de 5 pasos, reproductor de video y visor de libros</span></p>
+          </div>
+          <div class="modulo-precio">$2,185<small>Module 2</small></div>
+        </div>
+        <div class="modulo-body">
+          <ul>
+            <li><span class="en">20 themed modules (Greetings, Colors, Numbers…)</span><span class="es">20 módulos temáticos (Saludos, Colores, Números…)</span></li>
+            <li><span class="en">5-step sequence: greeting → video → storybook → closing → quiz</span><span class="es">Secuencia de 5 pasos: saludo → video → libro → cierre → quiz</span></li>
+            <li><span class="en">Video player via YouTube Private or Vimeo</span><span class="es">Reproductor de video via YouTube Privado o Vimeo</span></li>
+            <li><span class="en">Spanish subtitles by default (SRT files)</span><span class="es">Subtítulos en español por defecto (archivos SRT)</span></li>
+            <li><span class="en">One-tap toggle to switch subtitles to English</span><span class="es">Botón para cambiar subtítulos a inglés en un toque</span></li>
+            <li><span class="en">Audio player for greeting and closing songs</span><span class="es">Reproductor de audio para canciones de saludo y cierre</span></li>
+            <li><span class="en">Illustrated storybook viewer (images + narration)</span><span class="es">Visor de libro ilustrado (imágenes + narración de audio)</span></li>
+            <li><span class="en">Sequential navigation — steps unlock in order</span><span class="es">Navegación secuencial — los pasos se desbloquean en orden</span></li>
+            <li><span class="en">Visual step indicator (current position in module)</span><span class="es">Indicador visual del paso actual dentro del módulo</span></li>
+            <li><span class="en">10-minute session timer with visual progress bar</span><span class="es">Temporizador de 10 minutos con barra de progreso visual</span></li>
+          </ul>
+          <span class="modulo-tag tag-fe">Frontend</span><span class="modulo-tag tag-be">Backend</span><span class="modulo-tag tag-int">YouTube / Vimeo</span>
+        </div>
+      </div>
+
+      <!-- MOD 3 -->
+      <div class="modulo-card">
+        <div class="modulo-head">
+          <div class="modulo-num">3</div>
+          <div class="modulo-info">
+            <h3><span class="en">Progress Tracking & Module Unlock System</span><span class="es">Seguimiento de Progreso y Sistema de Desbloqueo</span></h3>
+            <p><span class="en">Saves each family's progress and controls which modules are available, locked, or completed</span><span class="es">Guarda el progreso de cada familia y controla qué módulos están disponibles, bloqueados o completados</span></p>
+          </div>
+          <div class="modulo-precio">$1,090<small>Module 3</small></div>
+        </div>
+        <div class="modulo-body">
+          <ul>
+            <li><span class="en">Visual progress bar visible throughout the entire app</span><span class="es">Barra de progreso global visible en toda la aplicación</span></li>
+            <li><span class="en">New module automatically unlocks each week</span><span class="es">Nuevo módulo se desbloquea automáticamente cada semana</span></li>
+            <li><span class="en">Next module locked until current quiz is passed</span><span class="es">Siguiente módulo bloqueado hasta aprobar el quiz actual</span></li>
+            <li><span class="en">Module states: Locked / Available / In Progress / Completed</span><span class="es">Estados: Bloqueado / Disponible / En progreso / Completado</span></li>
+            <li><span class="en">Clear visual indicators (lock icons, colors, badges)</span><span class="es">Indicadores visuales claros (candados, colores, insignias)</span></li>
+            <li><span class="en">Completed modules always available for free review</span><span class="es">Módulos completados disponibles para repaso libre</span></li>
+            <li><span class="en">Progress saved — continues across sessions and devices</span><span class="es">Progreso guardado — continúa entre sesiones y dispositivos</span></li>
+            <li><span class="en">Progress persists between sessions automatically</span><span class="es">El progreso persiste entre sesiones automáticamente</span></li>
+          </ul>
+          <span class="modulo-tag tag-fe">Frontend</span><span class="modulo-tag tag-be">Backend</span>
+        </div>
+      </div>
+
+      <!-- MOD 4 -->
+      <div class="modulo-card">
+        <div class="modulo-head">
+          <div class="modulo-num">4</div>
+          <div class="modulo-info">
+            <h3><span class="en">Interactive Visual Quizzes</span><span class="es">Evaluaciones Visuales Interactivas</span></h3>
+            <p><span class="en">Fun visual evaluations for children 2–4 — no reading required, just tap the right picture</span><span class="es">Evaluaciones visuales divertidas para niños de 2 a 4 años — sin necesidad de leer, solo toca la imagen correcta</span></p>
+          </div>
+          <div class="modulo-precio">$1,405<small>Module 4</small></div>
+        </div>
+        <div class="modulo-body">
+          <ul>
+            <li><span class="en">Questions shown as large images with Spanish audio prompts</span><span class="es">Preguntas presentadas como imágenes grandes con audio en español</span></li>
+            <li><span class="en">Answer choices are images — no text for the child</span><span class="es">Las opciones de respuesta son imágenes — sin texto para el niño</span></li>
+            <li><span class="en">Positive animated feedback for correct answers</span><span class="es">Animación positiva de feedback para respuestas correctas</span></li>
+            <li><span class="en">Encouraging feedback when answer needs a retry</span><span class="es">Feedback motivador cuando la respuesta necesita un reintento</span></li>
+            <li><span class="en">Minimum score required to unlock next module</span><span class="es">Puntaje mínimo requerido para desbloquear el siguiente módulo</span></li>
+            <li><span class="en">Retry option available if quiz is not passed</span><span class="es">Opción de reintentar si el quiz no es aprobado</span></li>
+            <li><span class="en">Pass/fail result saved to the family's account</span><span class="es">Resultado guardado en la cuenta familiar</span></li>
+            <li><span class="en">Designed for caregiver and child to play together</span><span class="es">Diseñado para que el cuidador y el niño jueguen juntos</span></li>
+            <li><span class="en">One quiz per module, aligned to its theme</span><span class="es">Un quiz por módulo, alineado a su tema</span></li>
+            <li><span class="en">Smooth, child-friendly animations throughout</span><span class="es">Animaciones suaves y amigables para niños en toda la experiencia</span></li>
+          </ul>
+          <span class="modulo-tag tag-fe">Frontend</span><span class="modulo-tag tag-be">Backend</span>
+        </div>
+      </div>
+
+      <!-- MOD 5 -->
+      <div class="modulo-card">
+        <div class="modulo-head">
+          <div class="modulo-num">5</div>
+          <div class="modulo-info">
+            <h3><span class="en">Bilingual Interface — English / Spanish</span><span class="es">Interfaz Bilingüe — Inglés / Español</span></h3>
+            <p><span class="en">Every button, menu and instruction available in both languages for caregivers</span><span class="es">Cada botón, menú e instrucción disponible en ambos idiomas para los cuidadores</span></p>
+          </div>
+          <div class="modulo-precio">$605<small>Module 5</small></div>
+        </div>
+        <div class="modulo-body">
+          <ul>
+            <li><span class="en">Language toggle accessible from any screen</span><span class="es">Toggle de idioma accesible desde cualquier pantalla</span></li>
+            <li><span class="en">All interface text in English and Spanish</span><span class="es">Todo el texto de la interfaz en inglés y español</span></li>
+            <li><span class="en">Buttons, menus, errors and instructions translated</span><span class="es">Botones, menús, errores e instrucciones traducidos</span></li>
+            <li><span class="en">Subtitle toggle: Spanish default → English on request</span><span class="es">Toggle de subtítulos: español por defecto → inglés a pedido</span></li>
+            <li><span class="en">SRT files loaded per module per language</span><span class="es">Archivos SRT cargados por módulo y por idioma</span></li>
+            <li><span class="en">Language preference saved to the family account</span><span class="es">Preferencia de idioma guardada en la cuenta familiar</span></li>
+            <li><span class="en">Works for English and Spanish-speaking caregivers</span><span class="es">Funciona para cuidadores angloparlantes e hispanohablantes</span></li>
+            <li><span class="en">Translations easy to update without code changes</span><span class="es">Traducciones fáciles de actualizar sin cambios de código</span></li>
+          </ul>
+          <span class="modulo-tag tag-fe">Frontend</span><span class="modulo-tag tag-int">i18n System</span>
+        </div>
+      </div>
+
+      <!-- MOD 6 -->
+      <div class="modulo-card">
+        <div class="modulo-head">
+          <div class="modulo-num">6</div>
+          <div class="modulo-info">
+            <h3><span class="en">Online Subscriptions & Payments</span><span class="es">Suscripciones y Pagos en Línea</span></h3>
+            <p><span class="en">Secure Stripe payments — families subscribe and manage their plan directly in the app</span><span class="es">Pagos seguros con Stripe — las familias suscriben y gestionan su plan directamente en la app</span></p>
+          </div>
+          <div class="modulo-precio">$1,020<small>Module 6</small></div>
+        </div>
+        <div class="modulo-body">
+          <ul>
+            <li><span class="en">Monthly and annual subscription plans</span><span class="es">Planes de suscripción mensual y anual</span></li>
+            <li><span class="en">Secure checkout powered by Stripe</span><span class="es">Pago seguro con Stripe</span></li>
+            <li><span class="en">Access activated automatically after successful payment</span><span class="es">Acceso activado automáticamente tras el pago</span></li>
+            <li><span class="en">Subscription management page (view, cancel, update)</span><span class="es">Página de gestión de suscripción (ver, cancelar, actualizar)</span></li>
+            <li><span class="en">Payment history visible to the family</span><span class="es">Historial de pagos visible para la familia</span></li>
+            <li><span class="en">Email notification before subscription expires</span><span class="es">Notificación por email antes de que venza la suscripción</span></li>
+            <li><span class="en">Access automatically blocked when subscription ends</span><span class="es">Acceso bloqueado automáticamente al vencer la suscripción</span></li>
+            <li><span class="en">Renewal available at the start of the next school year</span><span class="es">Renovación disponible al inicio del siguiente año escolar</span></li>
+          </ul>
+          <span class="modulo-tag tag-fe">Frontend</span><span class="modulo-tag tag-be">Backend</span><span class="modulo-tag tag-int">Stripe</span>
+        </div>
+      </div>
+
+      <!-- VIDEO -->
+      <div class="modulo-card" style="border-color:#ce93d8;">
+        <div class="modulo-head" style="background:#f3e5f5;border-bottom-color:#ce93d8;">
+          <div class="modulo-num" style="background:#6a1b9a;">🎬</div>
+          <div class="modulo-info">
+            <h3><span class="en">Video Editing & Integration — Option A (iPhone)</span><span class="es">Edición e Integración de Video — Opción A (iPhone)</span></h3>
+            <p><span class="en">Post-production of all 20 modules using footage provided by Colorín</span><span class="es">Post-producción de los 20 módulos con el material grabado por Colorín</span></p>
+          </div>
+          <div class="modulo-precio" style="color:#6a1b9a;">$900<small><span class="en">Video Production</span><span class="es">Producción Video</span></small></div>
+        </div>
+        <div class="modulo-body">
+          <ul>
+            <li><span class="en">Editing of all footage delivered by Colorín</span><span class="es">Edición de todo el material entregado por Colorín</span></li>
+            <li><span class="en">Colorín logo intro and outro on each video</span><span class="es">Intro y outro con el logo de Colorín en cada video</span></li>
+            <li><span class="en">Spanish subtitles synced via SRT per module</span><span class="es">Subtítulos en español sincronizados vía SRT por módulo</span></li>
+            <li><span class="en">Background music where appropriate</span><span class="es">Música de fondo donde corresponda</span></li>
+            <li><span class="en">Animated text or icon overlays on key moments</span><span class="es">Texto animado o íconos superpuestos en momentos clave</span></li>
+            <li><span class="en">Color correction and audio normalization</span><span class="es">Corrección de color y normalización de audio</span></li>
+            <li><span class="en">Export optimized for mobile and desktop web</span><span class="es">Exportación optimizada para web móvil y escritorio</span></li>
+            <li><span class="en">Upload and organization in YouTube Private or Vimeo</span><span class="es">Carga y organización en YouTube Privado o Vimeo</span></li>
+          </ul>
+          <span class="modulo-tag" style="background:#f3e5f5;color:#6a1b9a;border:1px solid #ce93d8;"><span class="en">Video Production</span><span class="es">Producción Video</span></span>
+          <span class="modulo-tag tag-int">YouTube / Vimeo</span>
+        </div>
+      </div>
+
+      <!-- QA -->
+      <div class="modulo-card" style="border-color:#90caf9;">
+        <div class="modulo-head" style="background:#e3f2fd;border-bottom-color:#90caf9;">
+          <div class="modulo-num" style="background:#1565c0;">🚀</div>
+          <div class="modulo-info">
+            <h3><span class="en">Quality Assurance, Testing & Deployment</span><span class="es">Control de Calidad, Pruebas y Despliegue</span></h3>
+            <p><span class="en">Full testing across devices and browsers, bug fixes, and production deployment</span><span class="es">Pruebas completas en dispositivos y navegadores, corrección de errores y despliegue a producción</span></p>
+          </div>
+          <div class="modulo-precio" style="color:#1565c0;">$608<small>QA & Deploy</small></div>
+        </div>
+        <div class="modulo-body">
+          <ul>
+            <li><span class="en">Cross-device testing: iPhone, iPad, Android, desktop</span><span class="es">Pruebas en dispositivos: iPhone, iPad, Android, escritorio</span></li>
+            <li><span class="en">Browser testing: iOS Safari, Android Chrome, desktop</span><span class="es">Pruebas en navegadores: iOS Safari, Android Chrome, escritorio</span></li>
+            <li><span class="en">Full user flow testing for all 20 modules</span><span class="es">Prueba del flujo completo de usuario en los 20 módulos</span></li>
+            <li><span class="en">Quiz logic, unlock system, and subscription verification</span><span class="es">Verificación de lógica de quiz, desbloqueo y suscripción</span></li>
+            <li><span class="en">Performance and loading speed optimization</span><span class="es">Optimización de rendimiento y velocidad de carga</span></li>
+            <li><span class="en">Beta version in August 2026 for internal review</span><span class="es">Versión beta en agosto 2026 para revisión interna</span></li>
+            <li><span class="en">Client feedback round before final launch</span><span class="es">Ronda de retroalimentación del cliente antes del lanzamiento</span></li>
+            <li><span class="en">Final deployment to production — September 2026</span><span class="es">Despliegue final a producción — Septiembre 2026</span></li>
+          </ul>
+          <span class="modulo-tag" style="background:#e3f2fd;color:#1565c0;border:1px solid #90caf9;">QA & Testing</span>
+          <span class="modulo-tag tag-be">Deployment</span>
+        </div>
+      </div>
+
+      <!-- AVISO CONTENIDO -->
+      <div class="aviso-contenido">
+        <strong>
+          <span class="en">⚠️ Important — Content Delivery Requirement:</span>
+          <span class="es">⚠️ Importante — Entrega de Materiales por el Cliente:</span>
+        </strong><br>
+        <span class="en">The September 2026 launch date can <strong>only be guaranteed</strong> if Colorín delivers all required content materials by <strong>July 1, 2026</strong>. Any delay in content delivery will directly impact the development schedule and may push back the launch date.</span>
+        <span class="es">La fecha de lanzamiento de septiembre 2026 <strong>solo puede garantizarse</strong> si Colorín entrega todos los materiales de contenido antes del <strong>1 de julio de 2026</strong>. Cualquier retraso en la entrega de materiales impactará directamente el cronograma de desarrollo y podría postergar el lanzamiento.</span>
+        <ul>
+          <li><span class="en">All recorded video footage for the 20 modules (finalized iPhone recordings)</span><span class="es">Todo el material de video grabado para los 20 módulos (grabaciones de iPhone finalizadas)</span></li>
+          <li><span class="en">Audio files for greeting and closing songs (all 20 modules)</span><span class="es">Archivos de audio de las canciones de saludo y cierre (los 20 módulos)</span></li>
+          <li><span class="en">Storybook illustration images or files for each module</span><span class="es">Imágenes o archivos de ilustración del libro/cuento por módulo</span></li>
+          <li><span class="en">SRT subtitle transcript files in Spanish</span><span class="es">Archivos SRT de transcripción de subtítulos en español</span></li>
+          <li><span class="en">Quiz design: questions, image options, and correct answers per module</span><span class="es">Diseño del quiz: preguntas, imágenes de opciones y respuestas correctas por módulo</span></li>
+          <li><span class="en">Colorín logo and brand assets in high resolution</span><span class="es">Logo de Colorín y materiales de marca en alta resolución</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 04 TIMELINE -->
+    <div class="section">
+      <div class="section-label">04 — <span class="en">Timeline</span><span class="es">Cronograma</span></div>
+      <div class="section-title">
+        <span class="en">Project Schedule</span>
+        <span class="es">Plan de Trabajo</span>
+      </div>
+      <div class="crono-grid">
+        <div class="crono-card"><span class="cv">6</span><div class="cl"><span class="en">Development modules</span><span class="es">Módulos de desarrollo</span></div></div>
+        <div class="crono-card"><span class="cv">6.5 <span style="font-size:14px;">wks</span></span><div class="cl"><span class="en">Active development time</span><span class="es">Tiempo activo de desarrollo</span></div></div>
+        <div class="crono-card"><span class="cv">Aug 2026</span><div class="cl"><span class="en">Beta delivery for review</span><span class="es">Entrega beta para revisión</span></div></div>
+        <div class="crono-card"><span class="cv">Sep 2026</span><div class="cl"><span class="en">Final launch</span><span class="es">Lanzamiento final</span></div></div>
+      </div>
+      <div class="fases-timeline">
+        <div class="fase-item"><span class="fi-num"><span class="en">Week 1–2</span><span class="es">Sem. 1–2</span></span><div class="fi-label"><span class="en">Auth + Payments + i18n</span><span class="es">Auth + Pagos + i18n</span></div><span class="fi-date">Jul 1–11</span></div>
+        <div class="fase-item"><span class="fi-num"><span class="en">Week 3–4</span><span class="es">Sem. 3–4</span></span><div class="fi-label"><span class="en">Content + Video</span><span class="es">Contenido + Video</span></div><span class="fi-date">Jul 14–25</span></div>
+        <div class="fase-item"><span class="fi-num"><span class="en">Week 5–6</span><span class="es">Sem. 5–6</span></span><div class="fi-label"><span class="en">Progress + Unlock</span><span class="es">Progreso + Desbloqueo</span></div><span class="fi-date">Jul 28–Aug 8</span></div>
+        <div class="fase-item activa"><span class="fi-num"><span class="en">Week 7</span><span class="es">Sem. 7</span></span><div class="fi-label"><span class="en">Quiz + Beta</span><span class="es">Quiz + Beta</span></div><span class="fi-date">Aug 11–15 → BETA</span></div>
+        <div class="fase-item"><span class="fi-num"><span class="en">Week 8–9</span><span class="es">Sem. 8–9</span></span><div class="fi-label"><span class="en">QA + Fixes + Launch</span><span class="es">QA + Ajustes + Lanzamiento</span></div><span class="fi-date">Aug 18–Sep 5</span></div>
+      </div>
+      <p style="font-size:11.5px;color:#999;margin-top:8px;">
+        <span class="en">* Timeline assumes all content materials are delivered by Colorín no later than July 1, 2026. Business days only, excluding weekends and holidays.</span>
+        <span class="es">* El cronograma asume que todos los materiales de contenido son entregados por Colorín a más tardar el 1 de julio de 2026. Días hábiles únicamente, excluyendo fines de semana y feriados.</span>
+      </p>
+    </div>
+
+    <!-- 05 INVESTMENT -->
+    <div class="section">
+      <div class="section-label">05 — <span class="en">Investment</span><span class="es">Inversión</span></div>
+      <div class="section-title">
+        <span class="en">Project Cost Summary</span>
+        <span class="es">Resumen de Costos del Proyecto</span>
+      </div>
+      <div class="tabla-wrap">
+        <table class="costo-tabla">
+          <thead style="background:var(--verde-muy-oscuro);color:#fff;">
+            <tr>
+              <th style="padding:10px 14px;font-size:12px;font-weight:600;text-align:left;"><span class="en">Module</span><span class="es">Módulo</span></th>
+              <th style="padding:10px 14px;font-size:12px;font-weight:600;text-align:left;"><span class="en">Description</span><span class="es">Descripción</span></th>
+              <th style="padding:10px 14px;font-size:12px;font-weight:600;text-align:right;"><span class="en">Cost (USD)</span><span class="es">Costo (USD)</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="mod-dot"></span><strong><span class="en">Module 1</span><span class="es">Módulo 1</span></strong></td><td style="color:var(--gris-sub);"><span class="en">Family Account & Access Management</span><span class="es">Cuenta Familiar y Control de Acceso</span></td><td class="right">$1,020.00</td></tr>
+            <tr><td><span class="mod-dot"></span><strong><span class="en">Module 2</span><span class="es">Módulo 2</span></strong></td><td style="color:var(--gris-sub);"><span class="en">Content Platform — 20 Learning Modules</span><span class="es">Plataforma de Contenido — 20 Módulos de Aprendizaje</span></td><td class="right">$2,185.00</td></tr>
+            <tr><td><span class="mod-dot"></span><strong><span class="en">Module 3</span><span class="es">Módulo 3</span></strong></td><td style="color:var(--gris-sub);"><span class="en">Progress Tracking & Module Unlock System</span><span class="es">Seguimiento de Progreso y Sistema de Desbloqueo</span></td><td class="right">$1,090.00</td></tr>
+            <tr><td><span class="mod-dot"></span><strong><span class="en">Module 4</span><span class="es">Módulo 4</span></strong></td><td style="color:var(--gris-sub);"><span class="en">Interactive Visual Quizzes</span><span class="es">Evaluaciones Visuales Interactivas</span></td><td class="right">$1,405.00</td></tr>
+            <tr><td><span class="mod-dot"></span><strong><span class="en">Module 5</span><span class="es">Módulo 5</span></strong></td><td style="color:var(--gris-sub);"><span class="en">Bilingual Interface — English / Spanish</span><span class="es">Interfaz Bilingüe — Inglés / Español</span></td><td class="right">$605.00</td></tr>
+            <tr><td><span class="mod-dot"></span><strong><span class="en">Module 6</span><span class="es">Módulo 6</span></strong></td><td style="color:var(--gris-sub);"><span class="en">Online Subscriptions & Payments (Stripe)</span><span class="es">Suscripciones y Pagos en Línea (Stripe)</span></td><td class="right">$1,020.00</td></tr>
+            <tr class="row-video"><td><span class="mod-dot" style="background:#6a1b9a;"></span><strong><span class="en">Video Editing</span><span class="es">Edición de Video</span></strong></td><td style="color:var(--gris-sub);"><span class="en">Option A — iPhone footage editing, logo, subtitles, upload (20 modules)</span><span class="es">Opción A — Edición de videos iPhone, logo, subtítulos, carga (20 módulos)</span></td><td class="right">$900.00</td></tr>
+            <tr class="row-qa"><td><span class="mod-dot" style="background:#1565c0;"></span><strong>QA & Deploy</strong></td><td style="color:var(--gris-sub);"><span class="en">Quality assurance, cross-device testing, bug fixes & deployment</span><span class="es">Control de calidad, pruebas en dispositivos, corrección de errores y despliegue</span></td><td class="right">$608.00</td></tr>
+            <tr class="row-total"><td colspan="2"><strong><span class="en">Total Investment — Phase 1 MVP (all inclusive)</span><span class="es">Inversión Total — Fase 1 MVP (todo incluido)</span></strong></td><td class="right">$8,833.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:20px;">
+        <p style="font-size:12.5px;font-weight:700;color:var(--verde-oscuro);margin-bottom:10px;">
+          <span class="en">Payment Schedule</span><span class="es">Esquema de Pagos</span>
+        </p>
+        <div class="pagos-wrap">
+          <div class="pago-hito">
+            <span class="ph-pct">40%</span>
+            <div class="ph-usd">$3,533.20</div>
+            <div class="ph-label"><span class="en">Upfront Payment</span><span class="es">Anticipo</span></div>
+            <div class="ph-when"><span class="en">Upon contract signing</span><span class="es">Al firmar el contrato</span></div>
+          </div>
+          <div class="pago-sep">›</div>
+          <div class="pago-hito">
+            <span class="ph-pct">30%</span>
+            <div class="ph-usd">$2,649.90</div>
+            <div class="ph-label"><span class="en">Progress Payment</span><span class="es">Pago de Avance</span></div>
+            <div class="ph-when"><span class="en">Beta delivery — August 2026</span><span class="es">Entrega beta — Agosto 2026</span></div>
+          </div>
+          <div class="pago-sep">›</div>
+          <div class="pago-hito">
+            <span class="ph-pct">30%</span>
+            <div class="ph-usd">$2,649.90</div>
+            <div class="ph-label"><span class="en">Final Payment</span><span class="es">Pago Final</span></div>
+            <div class="ph-when"><span class="en">Final delivery — September 2026</span><span class="es">Entrega final — Septiembre 2026</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;background:var(--verde-fondo);border:1px solid var(--verde-borde);padding:14px 18px;font-size:12.5px;color:var(--gris-sub);">
+        <span class="en"><strong style="color:var(--gris);">Recurring operational costs (billed directly to Colorín by third-party providers):</strong><br>Video hosting Vimeo Standard (~$20/mo) · Frontend & backend hosting (~$40/mo) · Stripe payment processing (2.9% + $0.30/transaction) · Storage & CDN (~$10/mo). Estimated total: <strong>~$70–80/month</strong>.</span>
+        <span class="es"><strong style="color:var(--gris);">Costos operativos recurrentes (facturados directamente a Colorín por los proveedores externos):</strong><br>Hosting de video Vimeo Standard (~$20/mes) · Hosting frontend y backend (~$40/mes) · Procesamiento de pagos Stripe (2.9% + $0.30/transacción) · Almacenamiento y CDN (~$10/mes). Total estimado: <strong>~$70–80/mes</strong>.</span>
+      </div>
+    </div>
+
+    <!-- 06 TERMS -->
+    <div class="section">
+      <div class="section-label">06 — <span class="en">Terms & Conditions</span><span class="es">Términos y Condiciones</span></div>
+      <div class="section-title">
+        <span class="en">Agreement Terms</span>
+        <span class="es">Condiciones del Acuerdo</span>
+      </div>
+      <div class="terminos-grid">
+        <div class="termino">
+          <h4><span class="en">Proposal Validity</span><span class="es">Vigencia de la Propuesta</span></h4>
+          <p><span class="en">This proposal is valid for 30 calendar days from the date of issue. After that period, pricing may be revised by DevLabs.</span><span class="es">Esta propuesta tiene una vigencia de 30 días calendario desde la fecha de emisión. Pasado ese plazo, los precios podrán ser revisados por DevLabs.</span></p>
+        </div>
+        <div class="termino">
+          <h4><span class="en">Scope & Change Requests</span><span class="es">Alcance y Solicitudes de Cambio</span></h4>
+          <p><span class="en">Any feature not described in this proposal will be quoted separately. Up to 2 revision rounds per module are included at no extra charge.</span><span class="es">Cualquier funcionalidad no descrita en esta propuesta se cotizará por separado. Se incluyen hasta 2 rondas de revisión por módulo sin costo adicional.</span></p>
+        </div>
+        <div class="termino">
+          <h4><span class="en">Content Delivery Responsibility</span><span class="es">Responsabilidad de Entrega de Contenido</span></h4>
+          <p><span class="en">Colorín is responsible for delivering all videos, audio, images, SRT files, and quiz designs by <strong>July 1, 2026</strong>. Delays may push back the launch date.</span><span class="es">Colorín es responsable de entregar todos los videos, audios, imágenes, archivos SRT y diseños de quiz antes del <strong>1 de julio de 2026</strong>. Los retrasos pueden postergar el lanzamiento.</span></p>
+        </div>
+        <div class="termino">
+          <h4><span class="en">Source Code Ownership</span><span class="es">Propiedad del Código Fuente</span></h4>
+          <p><span class="en">Upon final payment, 100% of the source code becomes the property of Colorín Spanish Immersion Program.</span><span class="es">Al completar el pago final, el 100% del código fuente pasa a ser propiedad de Colorín Spanish Immersion Program.</span></p>
+        </div>
+        <div class="termino">
+          <h4><span class="en">Post-Launch Support</span><span class="es">Soporte Post-Lanzamiento</span></h4>
+          <p><span class="en">3 months of corrective support included after launch (bug fixes, not new features). A maintenance plan is available after that period.</span><span class="es">Se incluyen 3 meses de soporte correctivo post-lanzamiento (corrección de errores, no nuevas funcionalidades). Plan de mantenimiento disponible después.</span></p>
+        </div>
+        <div class="termino">
+          <h4><span class="en">Confidentiality</span><span class="es">Confidencialidad</span></h4>
+          <p><span class="en">DevLabs commits to keeping all materials and data provided by Colorín strictly confidential and will not share them with any third party.</span><span class="es">DevLabs se compromete a mantener en estricta confidencialidad todos los materiales y datos provistos por Colorín y no los compartirá con terceros.</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 07 SIGNATURES -->
+    <div class="section">
+      <div class="section-label">07 — <span class="en">Acceptance</span><span class="es">Aceptación</span></div>
+      <div class="section-title">
+        <span class="en">Proposal Acceptance & Signatures</span>
+        <span class="es">Aceptación de la Propuesta y Firmas</span>
+      </div>
+      <p style="font-size:13px;color:var(--gris-sub);margin-bottom:24px;line-height:1.75;">
+        <span class="en">By signing below, both parties formally agree to the scope, timeline, investment, and conditions described in this proposal. This document constitutes the basis for the project contract.</span>
+        <span class="es">Al firmar a continuación, ambas partes acuerdan formalmente el alcance, cronograma, inversión y condiciones descritos en esta propuesta. Este documento constituye la base del contrato de proyecto.</span>
+      </p>
+      <div class="firmas-grid">
+        <div class="firma">
+          <div class="firma-espacio"></div>
+          <div class="firma-nombre">Colorín Spanish Immersion Program</div>
+          <div class="firma-cargo"><span class="en">Authorized Representative</span><span class="es">Representante Autorizado</span></div>
+          <div class="firma-fecha"><span class="en">Date:</span><span class="es">Fecha:</span> ___________________________</div>
+        </div>
+        <div class="firma">
+          <div class="firma-espacio"></div>
+          <div class="firma-nombre">Ing. Andres Bonilla</div>
+          <div class="firma-cargo">DevLabs — <span class="en">Project Director</span><span class="es">Director de Proyectos</span></div>
+          <div class="firma-fecha"><span class="en">Date:</span><span class="es">Fecha:</span> ___________________________</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="disclaimer">
+    <span class="en">All prices are expressed in US Dollars (USD). This proposal covers Phase 1 — Web App MVP only. Phase 2 (Voice Recognition, Admin Dashboard) and native iOS App (Phase 3) are available as separate proposals upon request.</span>
+    <span class="es">Todos los precios están expresados en dólares americanos (USD). Esta propuesta cubre la Fase 1 — Web App MVP únicamente. La Fase 2 (Reconocimiento de voz, Panel admin) y la App iOS nativa (Fase 3) están disponibles como propuestas separadas.</span>
+  </div>
+
+  <div class="footer">
+    <div>
+      <strong>DevLabs</strong> — Software Seguro, a tu Medida<br>
+      <a href="mailto:development@devlabsec.com">development@devlabsec.com</a> &nbsp;·&nbsp; +593 99 937 2409
+    </div>
+    <div style="text-align:right;">
+      <strong>COT-2026-104</strong> &nbsp;·&nbsp; <span class="en">June</span><span class="es">Junio</span> 2026<br>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function setLang(lang) {
+    document.body.className = 'lang-' + lang;
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-es').classList.toggle('active', lang === 'es');
+    document.documentElement.lang = lang;
+  }
+</script>
+</body>
+</html>
